@@ -1,6 +1,13 @@
-# Welcome to your Expo app 👋
+# Progressive Overload
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile workout tracker for progressive overload training. Log sets and reps for each exercise, and the app automatically raises the target weight once you've hit the top of your rep range across every set.
+
+- **Exercises** — define an exercise with a rep range, target sets, weight increment, and starting weight.
+- **Logging** — record reps per set at the exercise's current weight; the app bumps the weight for next time once you hit the top of the rep range on every set.
+- **History** — browse every logged session, filterable by exercise and by date.
+- **Graph** — view weight and reps over time for an exercise, drilling down into an individual set or an aggregate (average/highest/lowest) across sets.
+
+Built with [Expo](https://expo.dev) and [Expo Router](https://docs.expo.dev/router/introduction), originally created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
 
