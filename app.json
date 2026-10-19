@@ -12,7 +12,6 @@
     },
     "android": {
       "predictiveBackGestureEnabled": false,
-      "package": "com.richardalton.progressiveoverload",
       "package": "com.richardalton.progressiveoverload"
     },
     "web": {
