@@ -37,13 +37,7 @@
       "router": {},
       "eas": {
         "projectId": "b31f3177-bdcb-4ee4-a830-482ccdcb493a"
-      },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "b31f3177-bdcb-4ee4-a830-482ccdcb493a"
       }
-    }
     },
     "owner": "richardalton"
   }
