@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { nextWeight } from '@/lib/progressive-overload';
-import { Exercise, SetLog, WorkoutSession } from '@/lib/types';
+import { Category, Exercise, SetLog, WorkoutSession } from '@/lib/types';
 
 const STORAGE_KEY = 'progressive-overload/v1';
 
@@ -11,13 +11,18 @@ function generateId() {
 }
 
 type StoredData = {
+  categories: Category[];
   exercises: Exercise[];
   sessions: WorkoutSession[];
 };
 
 type WorkoutStore = StoredData & {
   isLoaded: boolean;
+  addCategory: (name: string) => Category;
+  renameCategory: (categoryId: string, name: string) => void;
+  deleteCategory: (categoryId: string) => void;
   addExercise: (exercise: Omit<Exercise, 'id' | 'createdAt'>) => void;
+  updateExercise: (exerciseId: string, changes: Omit<Exercise, 'id' | 'createdAt'>) => void;
   deleteExercise: (exerciseId: string) => void;
   logSession: (exerciseId: string, sets: SetLog[]) => WorkoutSession;
   sessionsFor: (exerciseId: string) => WorkoutSession[];
@@ -26,12 +31,12 @@ type WorkoutStore = StoredData & {
 const WorkoutStoreContext = createContext<WorkoutStore | null>(null);
 
 export function WorkoutStoreProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<StoredData>({ exercises: [], sessions: [] });
+  const [data, setData] = useState<StoredData>({ categories: [], exercises: [], sessions: [] });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((raw) => {
-      if (raw) setData(JSON.parse(raw));
+      if (raw) setData({ categories: [], ...JSON.parse(raw) });
       setIsLoaded(true);
     });
   }, []);
@@ -44,6 +49,26 @@ export function WorkoutStoreProvider({ children }: { children: ReactNode }) {
     () => ({
       ...data,
       isLoaded,
+      addCategory: (name) => {
+        const category: Category = { id: generateId(), name };
+        setData((prev) => ({ ...prev, categories: [...prev.categories, category] }));
+        return category;
+      },
+      renameCategory: (categoryId, name) => {
+        setData((prev) => ({
+          ...prev,
+          categories: prev.categories.map((c) => (c.id === categoryId ? { ...c, name } : c)),
+        }));
+      },
+      deleteCategory: (categoryId) => {
+        setData((prev) => ({
+          ...prev,
+          categories: prev.categories.filter((c) => c.id !== categoryId),
+          exercises: prev.exercises.map((e) =>
+            e.categoryId === categoryId ? { ...e, categoryId: undefined } : e
+          ),
+        }));
+      },
       addExercise: (exercise) => {
         const newExercise: Exercise = {
           ...exercise,
@@ -52,8 +77,15 @@ export function WorkoutStoreProvider({ children }: { children: ReactNode }) {
         };
         setData((prev) => ({ ...prev, exercises: [...prev.exercises, newExercise] }));
       },
+      updateExercise: (exerciseId, changes) => {
+        setData((prev) => ({
+          ...prev,
+          exercises: prev.exercises.map((e) => (e.id === exerciseId ? { ...e, ...changes } : e)),
+        }));
+      },
       deleteExercise: (exerciseId) => {
         setData((prev) => ({
+          ...prev,
           exercises: prev.exercises.filter((e) => e.id !== exerciseId),
           sessions: prev.sessions.filter((s) => s.exerciseId !== exerciseId),
         }));
@@ -72,6 +104,7 @@ export function WorkoutStoreProvider({ children }: { children: ReactNode }) {
         };
 
         setData((prev) => ({
+          ...prev,
           exercises: prev.exercises.map((e) =>
             e.id === exerciseId ? { ...e, currentWeight: updatedWeight } : e
           ),

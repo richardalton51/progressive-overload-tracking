@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "progressive-overload",
+    "name": "Progressive Overload",
     "slug": "progressive-overload",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +17,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.richardalton.progressiveoverload"
     },
     "web": {
       "output": "static",
@@ -37,6 +38,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b31f3177-bdcb-4ee4-a830-482ccdcb493a"
+      }
     }
   }
 }

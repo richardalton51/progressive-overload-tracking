@@ -18,9 +18,7 @@ export default function LogWorkoutScreen() {
   const exercise = exercises.find((e) => e.id === id);
 
   const [view, setView] = useState<'log' | 'graph'>('log');
-  const [reps, setReps] = useState<string[]>(() =>
-    exercise ? Array.from({ length: exercise.targetSets }, () => '') : []
-  );
+  const [repInputs, setRepInputs] = useState<string[]>([]);
 
   if (!exercise) {
     return (
@@ -29,6 +27,8 @@ export default function LogWorkoutScreen() {
       </ThemedView>
     );
   }
+
+  const reps = Array.from({ length: exercise.targetSets }, (_, i) => repInputs[i] ?? '');
 
   const parsedSets: SetLog[] = reps.map((value) => ({
     reps: Number(value) || 0,
@@ -111,7 +111,7 @@ export default function LogWorkoutScreen() {
                 <TextInput
                   value={value}
                   onChangeText={(text) =>
-                    setReps((prev) => prev.map((r, i) => (i === index ? text : r)))
+                    setRepInputs(reps.map((r, i) => (i === index ? text : r)))
                   }
                   keyboardType="numeric"
                   placeholder="reps"
@@ -137,6 +137,14 @@ export default function LogWorkoutScreen() {
       ) : (
         <ExerciseWeightChart sessions={sessionsFor(exercise.id)} unit={exercise.unit} />
       )}
+
+      <Pressable
+        onPress={() => router.push({ pathname: '/exercise/new', params: { id: exercise.id } })}
+        style={styles.deleteButton}>
+        <ThemedText type="small" style={styles.hint}>
+          Edit exercise
+        </ThemedText>
+      </Pressable>
 
       <Pressable onPress={confirmDelete} style={styles.deleteButton}>
         <ThemedText type="small" style={styles.deleteButtonText}>
