@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "progressive-overload",
+    "name": "Progressive Overload",
     "slug": "progressive-overload",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,6 +12,7 @@
     },
     "android": {
       "predictiveBackGestureEnabled": false,
+      "package": "com.richardalton.progressiveoverload",
       "package": "com.richardalton.progressiveoverload"
     },
     "web": {
@@ -37,7 +38,13 @@
       "router": {},
       "eas": {
         "projectId": "b31f3177-bdcb-4ee4-a830-482ccdcb493a"
+      },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b31f3177-bdcb-4ee4-a830-482ccdcb493a"
       }
+    }
     },
     "owner": "richardalton"
   }

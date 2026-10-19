@@ -9,5 +9,7 @@ export function isBelowRange(exercise: Exercise, sets: SetLog[]) {
 }
 
 export function nextWeight(exercise: Exercise, sets: SetLog[]) {
-  return isTopOfRange(exercise, sets) ? exercise.currentWeight + exercise.weightIncrement : exercise.currentWeight;
+  if (!isTopOfRange(exercise, sets)) return exercise.currentWeight;
+  if (exercise.assisted) return Math.max(0, exercise.currentWeight - exercise.weightIncrement);
+  return exercise.currentWeight + exercise.weightIncrement;
 }
