@@ -12,6 +12,7 @@ export type Exercise = {
   repRangeMax: number;
   targetSets: number;
   weightIncrement: number;
+  assisted?: boolean;
   currentWeight: number;
   unit: 'kg' | 'lb';
   createdAt: number;

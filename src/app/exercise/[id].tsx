@@ -42,7 +42,9 @@ export default function LogWorkoutScreen() {
     if (session.weightIncreased) {
       Alert.alert(
         'Nice work! 💪',
-        `You hit ${exercise.repRangeMax} reps on every set. Weight goes up to ${exercise.currentWeight + exercise.weightIncrement}${exercise.unit} next time.`
+        exercise.assisted
+          ? `You hit ${exercise.repRangeMax} reps on every set. Assistance drops to ${Math.max(0, exercise.currentWeight - exercise.weightIncrement)}${exercise.unit} next time.`
+          : `You hit ${exercise.repRangeMax} reps on every set. Weight goes up to ${exercise.currentWeight + exercise.weightIncrement}${exercise.unit} next time.`
       );
     } else if (isBelowRange(exercise, parsedSets)) {
       Alert.alert('Logged', `Stay at ${exercise.currentWeight}${exercise.unit} and aim for ${exercise.repRangeMin}+ reps next time.`);
@@ -80,11 +82,12 @@ export default function LogWorkoutScreen() {
           <ThemedText type="small" themeColor="textSecondary">
             {' '}
             {exercise.unit}
+            {exercise.assisted ? ' assist' : ''}
           </ThemedText>
         </ThemedText>
         {isTopOfRange(exercise, parsedSets) && allFilled && (
           <ThemedText type="small" style={styles.hint}>
-            All sets at {exercise.repRangeMax}+ reps — weight will increase on submit.
+            All sets at {exercise.repRangeMax}+ reps — {exercise.assisted ? 'assistance will decrease' : 'weight will increase'} on submit.
           </ThemedText>
         )}
       </ThemedView>
@@ -119,7 +122,7 @@ export default function LogWorkoutScreen() {
                   style={[styles.input, { color: theme.text }]}
                 />
                 <ThemedText type="small" themeColor="textSecondary">
-                  reps @ {exercise.currentWeight}{exercise.unit}
+                  reps @ {exercise.currentWeight}{exercise.unit}{exercise.assisted ? ' assist' : ''}
                 </ThemedText>
               </ThemedView>
             ))}

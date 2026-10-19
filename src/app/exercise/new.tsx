@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, TextInput } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -44,6 +44,7 @@ export default function NewExerciseScreen() {
 
   const [categoryId, setCategoryId] = useState<string | undefined>(existing?.categoryId);
   const [subcategory, setSubcategory] = useState(existing?.subcategory ?? '');
+  const [assisted, setAssisted] = useState(existing?.assisted ?? false);
   const [name, setName] = useState(existing?.name ?? '');
   const [repRangeMin, setRepRangeMin] = useState(String(existing?.repRangeMin ?? 8));
   const [repRangeMax, setRepRangeMax] = useState(String(existing?.repRangeMax ?? 12));
@@ -65,6 +66,7 @@ export default function NewExerciseScreen() {
     const values = {
       name: name.trim(),
       categoryId,
+      assisted,
       subcategory: categoryId ? subcategory.trim() || undefined : undefined,
       repRangeMin: Number(repRangeMin) || 0,
       repRangeMax: Number(repRangeMax) || 0,
@@ -143,9 +145,20 @@ export default function NewExerciseScreen() {
         <Field label="Rep range max" value={repRangeMax} onChangeText={setRepRangeMax} keyboardType="numeric" />
       </ThemedView>
       <Field label="Target sets" value={targetSets} onChangeText={setTargetSets} keyboardType="numeric" />
+      <Pressable
+        onPress={() => setAssisted((value) => !value)}
+        style={[styles.toggle, { backgroundColor: theme.backgroundElement }]}>
+        <ThemedView style={styles.toggleText}>
+          <ThemedText type="smallBold">Assisted exercise</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            Weight is the assistance, so it goes down when you hit the top of the rep range.
+          </ThemedText>
+        </ThemedView>
+        <Switch value={assisted} onValueChange={setAssisted} />
+      </Pressable>
       <ThemedView style={styles.row}>
-        <Field label={existing ? `Current weight (${existing.unit})` : 'Starting weight (kg)'} value={startingWeight} onChangeText={setStartingWeight} keyboardType="numeric" />
-        <Field label="Weight increment (kg)" value={weightIncrement} onChangeText={setWeightIncrement} keyboardType="numeric" />
+        <Field label={existing ? `Current ${assisted ? 'assist' : 'weight'} (${existing.unit})` : `Starting ${assisted ? 'assist' : 'weight'} (kg)`} value={startingWeight} onChangeText={setStartingWeight} keyboardType="numeric" />
+        <Field label={assisted ? "Assist decrease (kg)" : "Weight increment (kg)"} value={weightIncrement} onChangeText={setWeightIncrement} keyboardType="numeric" />
       </ThemedView>
 
       <Pressable
@@ -172,6 +185,18 @@ const styles = StyleSheet.create({
   field: {
     flex: 1,
     gap: Spacing.one,
+  },
+  toggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+  },
+  toggleText: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    gap: Spacing.half,
   },
   chips: {
     flexDirection: 'row',

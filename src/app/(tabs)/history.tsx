@@ -92,7 +92,7 @@ export default function HistoryScreen() {
         </ThemedText>
         {item.weightIncreased && (
           <ThemedText type="small" style={styles.levelUp}>
-            Weight increased 🎉
+            {exercise?.assisted ? 'Assistance decreased 🎉' : 'Weight increased 🎉'}
           </ThemedText>
         )}
       </ThemedView>
