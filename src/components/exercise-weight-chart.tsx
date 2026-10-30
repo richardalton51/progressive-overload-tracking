@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, type ScrollViewInstance, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
@@ -61,7 +61,7 @@ function formatDate(timestamp: number) {
 
 export function ExerciseWeightChart({ sessions, unit }: { sessions: WorkoutSession[]; unit: string }) {
   const theme = useTheme();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const [metric, setMetric] = useState<RepsMetric>('average');
   const [setFilter, setSetFilter] = useState<SetFilter>('all');
 
