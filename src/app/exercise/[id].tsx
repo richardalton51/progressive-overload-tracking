@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 
 import { ExerciseWeightChart } from '@/components/exercise-weight-chart';
+import { ExerciseStepsButton } from '@/components/exercise-steps-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -12,7 +13,7 @@ import { SetLog } from '@/lib/types';
 import { useWorkoutStore } from '@/lib/workout-store';
 
 export default function LogWorkoutScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, workoutId } = useLocalSearchParams<{ id: string; workoutId?: string }>();
   const { exercises, logSession, deleteExercise, sessionsFor } = useWorkoutStore();
   const theme = useTheme();
   const exercise = exercises.find((e) => e.id === id);
@@ -38,7 +39,7 @@ export default function LogWorkoutScreen() {
   const allFilled = reps.every((value) => value.trim().length > 0);
 
   const submit = () => {
-    const session = logSession(exercise.id, parsedSets);
+    const session = logSession(exercise.id, parsedSets, workoutId);
     if (session.weightIncreased) {
       Alert.alert(
         'Nice work! 💪',
@@ -85,6 +86,7 @@ export default function LogWorkoutScreen() {
             {exercise.assisted ? ' assist' : ''}
           </ThemedText>
         </ThemedText>
+        <ExerciseStepsButton catalogId={exercise.catalogId} />
         {isTopOfRange(exercise, parsedSets) && allFilled && (
           <ThemedText type="small" style={styles.hint}>
             All sets at {exercise.repRangeMax}+ reps — {exercise.assisted ? 'assistance will decrease' : 'weight will increase'} on submit.

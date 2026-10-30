@@ -19,6 +19,11 @@ export default function RootLayout() {
             options={{ presentation: 'modal', title: 'Categories' }}
           />
           <Stack.Screen
+            name="workout/new"
+            options={{ presentation: 'modal', title: 'New Workout' }}
+          />
+          <Stack.Screen name="workout/[id]" options={{ title: 'Workout' }} />
+          <Stack.Screen
             name="exercise/[id]"
             options={{ title: 'Log Workout' }}
           />

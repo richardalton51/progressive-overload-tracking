@@ -1,11 +1,13 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, TextInput } from 'react-native';
 
+import { ExerciseStepsButton } from '@/components/exercise-steps-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { searchExercises } from '@/lib/exercise-catalog';
 import { useWorkoutStore } from '@/lib/workout-store';
 
 function Field({
@@ -13,11 +15,13 @@ function Field({
   value,
   onChangeText,
   keyboardType,
+  onBlur,
 }: {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   keyboardType?: 'numeric' | 'default';
+  onBlur?: () => void;
 }) {
   const theme = useTheme();
   return (
@@ -29,6 +33,7 @@ function Field({
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType ?? 'default'}
+        onBlur={onBlur}
         style={[styles.input, { color: theme.text, backgroundColor: theme.backgroundElement }]}
         placeholderTextColor={theme.textSecondary}
       />
@@ -46,6 +51,9 @@ export default function NewExerciseScreen() {
   const [subcategory, setSubcategory] = useState(existing?.subcategory ?? '');
   const [assisted, setAssisted] = useState(existing?.assisted ?? false);
   const [name, setName] = useState(existing?.name ?? '');
+  const [catalogId, setCatalogId] = useState(existing?.catalogId);
+  const [catalogName, setCatalogName] = useState(existing?.catalogId ? existing.name : '');
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [repRangeMin, setRepRangeMin] = useState(String(existing?.repRangeMin ?? 8));
   const [repRangeMax, setRepRangeMax] = useState(String(existing?.repRangeMax ?? 12));
   const [targetSets, setTargetSets] = useState(String(existing?.targetSets ?? 3));
@@ -60,11 +68,17 @@ export default function NewExerciseScreen() {
     ),
   ];
 
+  const nameSuggestions = useMemo(
+    () => (suggestionsOpen ? searchExercises(name, { limit: 6, excludeEquipment: ['body weight'] }) : []),
+    [name, suggestionsOpen]
+  );
+
   const canSave = name.trim().length > 0;
 
   const save = () => {
     const values = {
       name: name.trim(),
+      catalogId,
       categoryId,
       assisted,
       subcategory: categoryId ? subcategory.trim() || undefined : undefined,
@@ -83,9 +97,43 @@ export default function NewExerciseScreen() {
   return (
     <ScrollView
       style={{ backgroundColor: theme.background }}
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={styles.container}>
       <Stack.Screen options={{ title: existing ? 'Edit Exercise' : 'New Exercise' }} />
-      <Field label="Name" value={name} onChangeText={setName} />
+      <ThemedView style={styles.field}>
+        <Field
+          label="Name"
+          value={name}
+          onChangeText={(text) => {
+            setName(text);
+            setSuggestionsOpen(true);
+            if (text !== catalogName) setCatalogId(undefined);
+          }}
+          onBlur={() => setSuggestionsOpen(false)}
+        />
+        {nameSuggestions.length > 0 && (
+          <ThemedView style={[styles.suggestions, { backgroundColor: theme.backgroundElement }]}>
+            {nameSuggestions.map((suggestion) => (
+              <Pressable
+                key={suggestion.id}
+                onPress={() => {
+                  setName(suggestion.name);
+                  setCatalogId(suggestion.id);
+                  setCatalogName(suggestion.name);
+                  if (suggestion.equipment === 'assisted') setAssisted(true);
+                  setSuggestionsOpen(false);
+                }}
+                style={styles.suggestion}>
+                <ThemedText type="small">{suggestion.name}</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {suggestion.target} · {suggestion.equipment}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </ThemedView>
+        )}
+        <ExerciseStepsButton catalogId={catalogId} />
+      </ThemedView>
       <ThemedView style={styles.field}>
         <ThemedText type="small" themeColor="textSecondary">
           Category
@@ -207,6 +255,14 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.four,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.one,
+  },
+  suggestions: {
+    borderRadius: Spacing.two,
+    overflow: 'hidden',
+  },
+  suggestion: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
   },
   input: {
     borderRadius: Spacing.two,

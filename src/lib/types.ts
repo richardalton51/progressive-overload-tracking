@@ -7,6 +7,7 @@ export type Exercise = {
   id: string;
   name: string;
   categoryId?: string;
+  catalogId?: string;
   subcategory?: string;
   repRangeMin: number;
   repRangeMax: number;
@@ -15,6 +16,14 @@ export type Exercise = {
   assisted?: boolean;
   currentWeight: number;
   unit: 'kg' | 'lb';
+  createdAt: number;
+};
+
+export type Workout = {
+  id: string;
+  name: string;
+  exerciseIds: string[];
+  completedExerciseIds: string[];
   createdAt: number;
 };
 

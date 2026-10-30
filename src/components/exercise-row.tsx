@@ -6,11 +6,24 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { Exercise } from '@/lib/types';
 
-export function ExerciseRow({ exercise }: { exercise: Exercise }) {
+export function ExerciseRow({
+  exercise,
+  workoutId,
+  done,
+}: {
+  exercise: Exercise;
+  workoutId?: string;
+  done?: boolean;
+}) {
   return (
-    <Pressable onPress={() => router.push(`/exercise/${exercise.id}`)}>
+    <Pressable
+      onPress={() =>
+        router.push({ pathname: '/exercise/[id]', params: { id: exercise.id, workoutId } })
+      }>
       {({ pressed }) => (
-        <ThemedView type="backgroundElement" style={[styles.row, pressed && styles.pressed]}>
+        <ThemedView
+          type="backgroundElement"
+          style={[styles.row, done && styles.done, pressed && styles.pressed]}>
           <View style={styles.rowText}>
             <ThemedText type="smallBold">{exercise.name}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
@@ -40,6 +53,9 @@ const styles = StyleSheet.create({
   },
   rowText: {
     gap: Spacing.half,
+  },
+  done: {
+    backgroundColor: 'rgba(52, 199, 89, 0.35)',
   },
   pressed: {
     opacity: 0.7,

@@ -20,14 +20,21 @@ export default function AppTabs() {
         name="index"
         options={{
           title: 'Exercises',
-          tabBarIcon: ({ color, size }) => <Ionicons name="barbell" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="barbell" color={String(color)} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="workouts"
+        options={{
+          title: 'Workouts',
+          tabBarIcon: ({ color, size }) => <Ionicons name="clipboard" color={String(color)} size={size} />,
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
           title: 'History',
-          tabBarIcon: ({ color, size }) => <Ionicons name="time" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="time" color={String(color)} size={size} />,
         }}
       />
     </Tabs>
